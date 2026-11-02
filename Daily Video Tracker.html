@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <title>Daily Video Tracker.xlsx — Content Production Spreadsheet</title>
+  <meta name="description" content="Excel spreadsheet-style daily video production & publishing tracker.">
+  <meta name="theme-color" content="#107c41">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+:root {
+  --excel-green: #107c41;
+  --excel-green-hover: #0b5a2f;
+  --excel-green-light: #e6f4ea;
+  --excel-selection: #107c41;
+  --excel-selection-bg: rgba(16, 124, 65, 0.08);
+
+  --bg-app: #f3f4f6;
+  --bg-ribbon: #ffffff;
+  --bg-sheet: #ffffff;
+  --bg-header: #f8fafc;
+  --bg-row-even: #ffffff;
+  --bg-row-odd: #fcfcfd;
+  --bg-row-hover: #f1f5f9;
+  --bg-selected: #e8f0fe;
+  
+  --border-sheet: #d1d5db;
+  --border-cell: #e5e7eb;
+  --border-cell-dark: #cbd5e1;
+
+  --text-main: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+
+  --stage-edit: #d97706;
+  --stage-edit-bg: #fef3c7;
+  --stage-sent: #059669;
+  --stage-sent-bg: #d1fae5;
+  --stage-yt: #dc2626;
+  --stage-yt-bg: #fee2e2;
+  --stage-ig: #c026d3;
+  --stage-ig-bg: #fae8ff;
+
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --excel-green: #22c55e;
+  --excel-green-hover: #16a34a;
+  --excel-green-light: rgba(34, 197, 94, 0.15);
+  --excel-selection: #4ade80;
+  --excel-selection-bg: rgba(74, 222, 128, 0.12);
+
+  --bg-app: #0b0f19;
+  --bg-ribbon: #111827;
+  --bg-sheet: #131b2e;
+  --bg-header: #1e293b;
+  --bg-row-even: #131b2e;
+  --bg-row-odd: #101726;
+  --bg-row-hover: #1e293b;
+  --bg-selected: rgba(99, 102, 241, 0.15);
+
+  --border-sheet: #1f293d;
+  --border-cell: #1f293d;
+  --border-cell-dark: #334155;
+
+  --text-main: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #64748b;
+
+  --stage-edit-bg: rgba(217, 119, 6, 0.2);
+  --stage-sent-bg: rgba(5, 150, 105, 0.2);
+  --stage-yt-bg: rgba(220, 38, 38, 0.2);
+  --stage-ig-bg: rgba(192, 38, 211, 0.2);
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.excel-title-bar {
+  background: var(--bg-ribbon);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  height: 48px;
+}
+
+.file-info { display: flex; align-items: center; gap: 10px; }
+.excel-badge {
+  background: var(--excel-green);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.file-name-group { display: flex; align-items: center; gap: 8px; }
+.file-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+.save-indicator { font-size: 0.72rem; color: var(--excel-green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.top-actions { display: flex; align-items: center; gap: 6px; }
+
+.excel-ribbon {
+  background: var(--bg-ribbon);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ribbon-group::-webkit-scrollbar { display: none; }
+
+.btn-excel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-cell-dark);
+  background: var(--bg-sheet);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-excel:hover { background: var(--bg-header); border-color: var(--excel-green); }
+.btn-excel.btn-primary { background: var(--excel-green); color: #ffffff; border-color: var(--excel-green); }
+.btn-excel.btn-primary:hover { background: var(--excel-green-hover); }
+.btn-excel.btn-danger { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+.btn-excel.btn-danger:hover { background: #fee2e2; }
+
+.ribbon-divider { width: 1px; height: 20px; background: var(--border-sheet); margin: 0 4px; }
+
+.ribbon-search { position: relative; display: flex; align-items: center; }
+.ribbon-search input {
+  padding: 6px 10px 6px 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-cell-dark);
+  background: var(--bg-header);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  width: 180px;
+  transition: width 0.2s ease, border-color 0.15s ease;
+}
+.ribbon-search input:focus { outline: none; border-color: var(--excel-green); width: 230px; background: var(--bg-sheet); }
+.search-ico { position: absolute; left: 8px; color: var(--text-muted); pointer-events: none; font-size: 0.75rem; }
+
+.formula-bar {
+  background: var(--bg-sheet);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.name-box {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-cell);
+  border-radius: var(--radius-sm);
+  background: var(--bg-header);
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-align: center;
+  user-select: none;
+}
+.fx-label { font-style: italic; font-weight: 800; color: var(--excel-green); user-select: none; padding: 0 4px; }
+.formula-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--border-cell);
+  border-radius: var(--radius-sm);
+  background: var(--bg-header);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+.formula-input:focus { outline: none; border-color: var(--excel-green); background: var(--bg-sheet); }
+
+.kpi-quick-badges { display: none; align-items: center; gap: 8px; font-family: var(--font-family); font-size: 0.75rem; font-weight: 600; }
+@media (min-width: 900px) { .kpi-quick-badges { display: flex; } }
+.kpi-badge { padding: 2px 8px; border-radius: var(--radius-sm); background: var(--bg-header); border: 1px solid var(--border-cell); color: var(--text-secondary); }
+.kpi-badge b { color: var(--text-main); }
+
+.sheet-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: var(--bg-app);
+  -webkit-overflow-scrolling: touch;
+}
+
+.excel-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: var(--bg-sheet);
+  font-size: 0.88rem;
+}
+
+.excel-grid thead th {
+  background: var(--bg-header);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 10px;
+  border-right: 1px solid var(--border-cell);
+  border-bottom: 2px solid var(--border-sheet);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.excel-grid th.col-index, .excel-grid td.cell-index {
+  width: 50px; min-width: 50px; max-width: 50px; text-align: center;
+  background: var(--bg-header); color: var(--text-muted); font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 600; position: sticky; left: 0; z-index: 10;
+  border-right: 2px solid var(--border-sheet); user-select: none;
+}
+.excel-grid thead th.col-index { z-index: 30; }
+
+.excel-grid th.col-name, .excel-grid td.cell-name {
+  position: sticky; left: 50px; z-index: 9; border-right: 2px solid var(--border-sheet); background: var(--bg-sheet);
+}
+.excel-grid thead th.col-name { z-index: 29; background: var(--bg-header); }
+
+.excel-grid tbody tr { height: 42px; transition: background 0.1s ease; }
+.excel-grid tbody tr:nth-child(even) td { background-color: var(--bg-row-even); }
+.excel-grid tbody tr:nth-child(odd) td { background-color: var(--bg-row-odd); }
+.excel-grid tbody tr:hover td { background-color: var(--bg-row-hover) !important; }
+.excel-grid tbody tr.selected td { background-color: var(--bg-selected) !important; }
+
+.excel-grid td {
+  padding: 6px 10px; border-right: 1px solid var(--border-cell); border-bottom: 1px solid var(--border-cell);
+  vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.cell-input {
+  width: 100%; height: 100%; border: 1px solid transparent; background: transparent;
+  font-family: inherit; font-size: inherit; color: inherit; padding: 4px 6px; border-radius: 2px;
+}
+.cell-input:hover { border-color: var(--border-cell-dark); }
+.cell-input:focus { outline: none; background: var(--bg-sheet); border: 2px solid var(--excel-selection); }
+
+.cell-date { width: 130px; min-width: 120px; }
+.cell-date input[type="date"] {
+  border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 0.85rem;
+  color: var(--text-main); padding: 4px; border-radius: 2px; width: 100%; cursor: pointer;
+}
+
+.cell-checkbox { width: 105px; min-width: 95px; text-align: center; }
+.excel-check-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 90%; min-height: 32px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border-cell); background: var(--bg-header);
+  color: var(--text-muted); font-size: 0.78rem; font-weight: 700; cursor: pointer; user-select: none;
+}
+.excel-check-btn:active { transform: scale(0.96); }
+.excel-check-btn.checked.c-edit { background: var(--stage-edit-bg); border-color: var(--stage-edit); color: var(--stage-edit); }
+.excel-check-btn.checked.c-sent { background: var(--stage-sent-bg); border-color: var(--stage-sent); color: var(--stage-sent); }
+.excel-check-btn.checked.c-yt { background: var(--stage-yt-bg); border-color: var(--stage-yt); color: var(--stage-yt); }
+.excel-check-btn.checked.c-ig { background: var(--stage-ig-bg); border-color: var(--stage-ig); color: var(--stage-ig); }
+
+.cell-progress { width: 120px; min-width: 110px; text-align: center; }
+.progress-cell-wrap { display: flex; flex-direction: column; gap: 3px; align-items: center; }
+.progress-bar-bg { width: 80px; height: 5px; background: var(--border-cell); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+.progress-text { font-size: 0.72rem; font-weight: 700; }
+
+.cell-actions { width: 70px; min-width: 60px; text-align: center; }
+.btn-row-del {
+  border: none; background: transparent; color: var(--text-muted); width: 28px; height: 28px;
+  border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.btn-row-del:hover { background: #fee2e2; color: #ef4444; }
+
+.excel-grid tfoot th {
+  background: var(--bg-header); border-top: 2px solid var(--border-sheet); border-right: 1px solid var(--border-cell);
+  border-bottom: 2px solid var(--border-sheet); padding: 8px 10px; font-weight: 800; font-size: 0.8rem;
+  color: var(--text-main); position: sticky; bottom: 0; z-index: 25; white-space: nowrap;
+}
+.excel-grid tfoot th.col-index, .excel-grid tfoot th.col-name { position: sticky; bottom: 0; z-index: 28; }
+
+.add-row-placeholder {
+  height: 38px; display: flex; align-items: center; padding: 0 16px; color: var(--excel-green);
+  font-weight: 700; font-size: 0.82rem; cursor: pointer; background: var(--bg-sheet);
+  border-bottom: 1px solid var(--border-cell); user-select: none;
+}
+.add-row-placeholder:hover { background: var(--excel-green-light); }
+
+.sheet-tabs-bar {
+  background: var(--bg-ribbon); border-top: 1px solid var(--border-sheet); padding: 0 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 38px; flex-shrink: 0;
+}
+.sheet-tabs { display: flex; align-items: flex-end; gap: 2px; height: 100%; overflow-x: auto; scrollbar-width: none; }
+.sheet-tabs::-webkit-scrollbar { display: none; }
+.sheet-tab {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+  border-top-left-radius: var(--radius-sm); border-top-right-radius: var(--radius-sm);
+  border: 1px solid var(--border-sheet); border-bottom: none; background: var(--bg-app);
+  color: var(--text-secondary); font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap; height: 32px;
+}
+.sheet-tab.active {
+  background: var(--bg-sheet); color: var(--excel-green); font-weight: 800; border-top: 3px solid var(--excel-green); padding-top: 4px;
+}
+.sheet-status-info { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; display: none; }
+@media (min-width: 640px) { .sheet-status-info { display: flex; align-items: center; gap: 8px; } }
+
+.fab-excel {
+  position: fixed; bottom: 50px; right: 18px; width: 52px; height: 52px; border-radius: 50%;
+  background: var(--excel-green); color: #ffffff; border: none; box-shadow: var(--shadow-xl);
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 99;
+}
+@media (min-width: 768px) { .fab-excel { display: none; } }
+
+.toast-container { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 200; width: min(90%, 380px); pointer-events: none; }
+.toast { background: var(--text-main); color: var(--bg-app); padding: 10px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-xl); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 0.85rem; font-weight: 600; pointer-events: auto; }
+.toast-undo { background: var(--excel-green); color: #ffffff; border: none; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--bg-sheet); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); border: 1px solid var(--border-sheet); width: 100%; max-width: 480px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 1.1rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Excel Title Bar -->
+  <header class="excel-title-bar">
+    <div class="file-info">
+      <div class="excel-badge">XLSX</div>
+      <div class="file-name-group">
+        <span class="file-title">Daily Video Tracker.xlsx</span>
+        <span class="save-indicator" id="saveIndicator">● Saved</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="btn-excel" id="themeToggle"><span id="themeLabel">🌓 Theme</span></button>
+      <button type="button" class="btn-excel" id="btnOpenTools">⚙️ Settings</button>
+    </div>
+  </header>
+
+  <!-- Excel Ribbon Toolbar -->
+  <nav class="excel-ribbon">
+    <div class="ribbon-group">
+      <button type="button" class="btn-excel btn-primary" id="btnInsertRow">+ Insert Row</button>
+      <button type="button" class="btn-excel btn-danger" id="btnDeleteSelected" style="display:none;">🗑️ Delete Row(s) (<span id="selectedCountText">0</span>)</button>
+      <div class="ribbon-divider"></div>
+      <button type="button" class="btn-excel" id="btnExportExcel">Export Excel (.csv)</button>
+      <button type="button" class="btn-excel" id="btnImportTrigger">Import</button>
+      <input type="file" id="fileImportInput" accept=".csv,.json" style="display:none;">
+      <div class="ribbon-divider"></div>
+      <button type="button" class="btn-excel" id="btnSampleVideos">Load Sample</button>
+    </div>
+    <div class="ribbon-search">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="sheetSearch" placeholder="Find in sheet... ( / )">
+    </div>
+  </nav>
+
+  <!-- Formula & Name Box Bar (fx) -->
+  <div class="formula-bar">
+    <div class="name-box" id="nameBox">B2</div>
+    <div class="fx-label">fx</div>
+    <input type="text" class="formula-input" id="formulaInput" placeholder="=COUNTA(B2:B20)">
+    <div class="kpi-quick-badges" id="kpiBadges">
+      <span class="kpi-badge">Total: <b id="statTotal">0</b></span>
+      <span class="kpi-badge">To Edit: <b id="statEdit" style="color:var(--stage-edit)">0</b></span>
+      <span class="kpi-badge">Sent: <b id="statSent" style="color:var(--stage-sent)">0</b></span>
+      <span class="kpi-badge">YouTube: <b id="statYt" style="color:var(--stage-yt)">0</b></span>
+      <span class="kpi-badge">Instagram: <b id="statIg" style="color:var(--stage-ig)">0</b></span>
+      <span class="kpi-badge">Progress: <b id="statRate">0%</b></span>
+    </div>
+  </div>
+
+  <!-- Spreadsheet Grid (Freeze Panes on Row # and Project Name) -->
+  <main class="sheet-container" id="sheetScrollArea">
+    <table class="excel-grid" id="excelGrid">
+      <thead>
+        <tr>
+          <th class="col-index">#</th>
+          <th class="col-date" style="width: 130px;">A: Date</th>
+          <th class="col-name" style="width: 280px;">B: Project Name</th>
+          <th class="col-edit" style="width: 110px;">C: To Edit</th>
+          <th class="col-sent" style="width: 110px;">D: Sent</th>
+          <th class="col-yt" style="width: 110px;">E: YouTube</th>
+          <th class="col-ig" style="width: 110px;">F: Instagram</th>
+          <th class="col-progress" style="width: 120px;">G: Status</th>
+          <th class="col-actions" style="width: 70px;"></th>
+        </tr>
+      </thead>
+      <tbody id="sheetBody"></tbody>
+      <tfoot>
+        <tr>
+          <th class="col-index">∑</th>
+          <th>=COUNTA</th>
+          <th class="col-name"><span id="summaryTotal">0 Projects</span></th>
+          <th style="text-align:center;"><span id="summaryEdit" style="color:var(--stage-edit)">0 To Edit</span></th>
+          <th style="text-align:center;"><span id="summarySent" style="color:var(--stage-sent)">0 Sent</span></th>
+          <th style="text-align:center;"><span id="summaryYt" style="color:var(--stage-yt)">0 on YT</span></th>
+          <th style="text-align:center;"><span id="summaryIg" style="color:var(--stage-ig)">0 on IG</span></th>
+          <th style="text-align:center;"><span id="summaryRate">0% Avg</span></th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="add-row-placeholder" id="bottomAddRow">+ Click here to append a new video row...</div>
+  </main>
+
+  <!-- Sheet Tabs Bar -->
+  <footer class="sheet-tabs-bar">
+    <div class="sheet-tabs" id="sheetTabs">
+      <button type="button" class="sheet-tab active" data-tab="all"><span>🟢 Sheet 1: All Videos</span></button>
+      <button type="button" class="sheet-tab" data-tab="edit"><span>🟡 Sheet 2: To Edit</span></button>
+      <button type="button" class="sheet-tab" data-tab="sent"><span>📤 Sheet 3: Sent Review</span></button>
+      <button type="button" class="sheet-tab" data-tab="yt"><span>🔴 Sheet 4: YouTube</span></button>
+      <button type="button" class="sheet-tab" data-tab="ig"><span>📸 Sheet 5: Instagram</span></button>
+      <button type="button" class="sheet-tab" data-tab="done"><span>✨ Sheet 6: Completed</span></button>
+    </div>
+    <div class="sheet-status-info">
+      <span id="sheetCountInfo">Showing 0 rows</span>
+      <span>• UTF-8</span>
+    </div>
+  </footer>
+
+  <button type="button" class="fab-excel" id="mobileAddFab" title="Add Row">+</button>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="toolsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Spreadsheet Tools & Data</h3>
+        <button type="button" class="btn-excel" id="btnCloseTools">✕</button>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-secondary);">All rows are saved in real-time in LocalStorage. Export Excel backups anytime.</p>
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn-excel btn-primary" id="modalExportCsv" style="flex:1;">⬇️ Export to Excel (.csv)</button>
+        <button type="button" class="btn-excel" id="modalExportJson" style="flex:1;">💾 Export JSON</button>
+      </div>
+      <hr style="border:none; border-top:1px solid var(--border-sheet); margin:6px 0;">
+      <div style="display:flex; justify-content:space-between; gap:10px;">
+        <button type="button" class="btn-excel" id="modalLoadSample">Load Sample Data</button>
+        <button type="button" class="btn-excel btn-danger" id="modalClearAll">Clear Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  var STORAGE_KEY = "videoTracker.v1", THEME_KEY = "videoTracker.theme";
+  var items = [], selectedRowIds = new Set(), activeSheetTab = "all", searchQuery = "", recentlyDeleted = null, activeFocusedCell = null;
+  function $(id){ return document.getElementById(id); }
+  function $$(s){ return document.querySelectorAll(s); }
+  function todayISO(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]}); }
+  function loadData(){ try{ items=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")||[]; if(!Array.isArray(items)) items=[]; }catch(e){ items=[]; } }
+  function saveData(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(items)); }catch(e){} }
+  function calculateProgress(it){ if(it.yt && it.ig) return 100; var s=0; if(it.edit) s=20; if(it.sent) s=50; if(it.yt) s+=25; if(it.ig) s+=25; return Math.min(100,s); }
+
+  function insertRow(name, date){
+    var r={ id:"r_"+Date.now()+"_"+Math.floor(Math.random()*1000), name:name||"", date:date||todayISO(), edit:true, sent:false, yt:false, ig:false, createdAt:new Date().toISOString() };
+    items.unshift(r); saveData(); render();
+    setTimeout(function(){ var inp=document.querySelector('input[data-id="'+r.id+'"][data-col="name"]'); if(inp){ inp.focus(); inp.select(); } }, 50);
+    return r;
+  }
+
+  function toggleStatus(id, f, val){
+    var it=items.find(function(x){return x.id===id}); if(!it) return;
+    it[f]=val;
+    if(f==="sent") it.edit=!val;
+    if(f==="edit"&&val) it.sent=false;
+    saveData(); render();
+  }
+
+  function deleteRow(id){
+    var idx=items.findIndex(function(x){return x.id===id}); if(idx===-1) return;
+    var del=items[idx]; items.splice(idx,1); selectedRowIds.delete(id); saveData(); render();
+    if(recentlyDeleted&&recentlyDeleted.timeoutId) clearTimeout(recentlyDeleted.timeoutId);
+    recentlyDeleted={items:[{item:del,index:idx}],timeoutId:setTimeout(function(){recentlyDeleted=null},5500)};
+    showToast('Deleted row "'+(del.name||"Untitled")+'"', true);
+  }
+
+  function undoDelete(){
+    if(!recentlyDeleted||!recentlyDeleted.items) return;
+    clearTimeout(recentlyDeleted.timeoutId);
+    recentlyDeleted.items.forEach(function(x){ items.splice(Math.min(x.index,items.length),0,x.item); });
+    recentlyDeleted=null; saveData(); render(); showToast("Restored deleted row!");
+  }
+
+  function getFilteredRows(){
+    return items.filter(function(x){
+      if(searchQuery && !x.name.toLowerCase().includes(searchQuery)) return false;
+      if(activeSheetTab==="edit" && !x.edit) return false;
+      if(activeSheetTab==="sent" && !x.sent) return false;
+      if(activeSheetTab==="yt" && !x.yt) return false;
+      if(activeSheetTab==="ig" && !x.ig) return false;
+      if(activeSheetTab==="done" && !(x.yt && x.ig)) return false;
+      return true;
+    });
+  }
+
+  function render(){
+    var list=getFilteredRows(), tbody=$("sheetBody");
+    tbody.innerHTML=list.map(function(it, idx){
+      var rowNum=idx+1, isSel=selectedRowIds.has(it.id), prog=calculateProgress(it), isDone=it.yt&&it.ig;
+      var pColor=isDone?"var(--stage-sent)":prog>50?"var(--excel-green)":"var(--stage-edit)";
+      return '<tr class="'+(isSel?"selected":"")+'" data-id="'+it.id+'" data-row="'+rowNum+'">'+
+        '<td class="cell-index row-select" data-id="'+it.id+'">'+rowNum+'</td>'+
+        '<td class="cell-date"><input type="date" value="'+(it.date||"")+'" data-id="'+it.id+'" data-col="date"></td>'+
+        '<td class="cell-name"><input type="text" class="cell-input" value="'+esc(it.name)+'" placeholder="Enter project name..." data-id="'+it.id+'" data-col="name" data-row="'+rowNum+'"></td>'+
+        '<td class="cell-checkbox"><button type="button" class="excel-check-btn c-edit '+(it.edit?"checked":"")+'" data-action="toggle" data-f="edit" data-id="'+it.id+'">'+(it.edit?"✓ Yes":"No")+'</button></td>'+
+        '<td class="cell-checkbox"><button type="button" class="excel-check-btn c-sent '+(it.sent?"checked":"")+'" data-action="toggle" data-f="sent" data-id="'+it.id+'">'+(it.sent?"✓ Sent":"No")+'</button></td>'+
+        '<td class="cell-checkbox"><button type="button" class="excel-check-btn c-yt '+(it.yt?"checked":"")+'" data-action="toggle" data-f="yt" data-id="'+it.id+'">'+(it.yt?"✓ Posted":"No")+'</button></td>'+
+        '<td class="cell-checkbox"><button type="button" class="excel-check-btn c-ig '+(it.ig?"checked":"")+'" data-action="toggle" data-f="ig" data-id="'+it.id+'">'+(it.ig?"✓ Posted":"No")+'</button></td>'+
+        '<td class="cell-progress"><div class="progress-cell-wrap"><span class="progress-text" style="color:'+pColor+'">'+prog+'%</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:'+prog+'%; background:'+pColor+';"></div></div></div></td>'+
+        '<td class="cell-actions"><button type="button" class="btn-row-del" data-action="delete" data-id="'+it.id+'">✕</button></td>'+
+      '</tr>';
+    }).join("");
+
+    updateSummaries(list);
+  }
+
+  function updateSummaries(list){
+    var total=items.length, cEdit=items.filter(function(x){return x.edit}).length;
+    var cSent=items.filter(function(x){return x.sent}).length, cYt=items.filter(function(x){return x.yt}).length;
+    var cIg=items.filter(function(x){return x.ig}).length, cDone=items.filter(function(x){return x.yt&&x.ig}).length;
+    var avg=total?Math.round((cDone/total)*100):0;
+
+    $("statTotal").textContent=total; $("statEdit").textContent=cEdit;
+    $("statSent").textContent=cSent; $("statYt").textContent=cYt;
+    $("statIg").textContent=cIg; $("statRate").textContent=avg+"%";
+
+    $("summaryTotal").textContent=list.length+" Rows";
+    $("summaryEdit").textContent=list.filter(function(x){return x.edit}).length+" To Edit";
+    $("summarySent").textContent=list.filter(function(x){return x.sent}).length+" Sent";
+    $("summaryYt").textContent=list.filter(function(x){return x.yt}).length+" on YT";
+    $("summaryIg").textContent=list.filter(function(x){return x.ig}).length+" on IG";
+    var lDone=list.filter(function(x){return x.yt&&x.ig}).length, lRate=list.length?Math.round((lDone/list.length)*100):0;
+    $("summaryRate").textContent=lRate+"% Avg";
+    $("sheetCountInfo").textContent="Showing "+list.length+" of "+total+" rows";
+
+    var btnDel=$("btnDeleteSelected");
+    if(btnDel){
+      if(selectedRowIds.size>0){ btnDel.style.display="inline-flex"; $("selectedCountText").textContent=selectedRowIds.size; }
+      else { btnDel.style.display="none"; }
+    }
+  }
+
+  function exportExcelCSV(){
+    if(!items.length) return showToast("Sheet is empty!");
+    var h=["Row","Date","Project Name","To Edit","Sent Review","YouTube","Instagram","Progress %","Created At"];
+    var r=items.map(function(it, idx){
+      var prog=calculateProgress(it);
+      return [idx+1, '"'+(it.date||"")+'"', '"'+(it.name||"").replace(/"/g,'""')+'"', it.edit?"YES":"NO", it.sent?"YES":"NO", it.yt?"YES":"NO", it.ig?"YES":"NO", '"'+prog+'%"', '"'+(it.createdAt||"")+'"'];
+    });
+    var blob=new Blob(["\uFEFF"+[h.join(",")].concat(r.map(function(x){return x.join(",")})).join("\r\n")], {type:"text/csv;charset=utf-8;"});
+    var u=URL.createObjectURL(blob), a=document.createElement("a"); a.href=u; a.download="Daily_Video_Tracker_"+todayISO()+".csv"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
+    showToast("Excel CSV exported!");
+  }
+
+  function exportJSON(){
+    var a=document.createElement("a"); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(items,null,2));
+    a.download="Daily_Video_Tracker_"+todayISO()+".json"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    showToast("JSON downloaded!");
+  }
+
+  function handleImport(file){
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      try {
+        var text=e.target.result;
+        if(file.name.endsWith(".json")){
+          var p=JSON.parse(text); if(Array.isArray(p)){ items=p; saveData(); render(); showToast("Imported "+p.length+" rows!"); return; }
+        } else {
+          var lines=text.split(/\r?\n/).filter(Boolean);
+          if(lines.length>1){
+            var imp=[];
+            for(var i=1; i<lines.length; i++){
+              var cols=lines[i].split(",").map(function(c){return c.replace(/^"|"$/g,"").trim()});
+              if(cols.length>=3){
+                imp.push({ id:"r_"+Date.now()+"_"+i, date:cols[1]||todayISO(), name:cols[2]||"Project", edit:(cols[3]||"").toUpperCase()==="YES", sent:(cols[4]||"").toUpperCase()==="YES", yt:(cols[5]||"").toUpperCase()==="YES", ig:(cols[6]||"").toUpperCase()==="YES", createdAt:new Date().toISOString() });
+              }
+            }
+            if(imp.length){ items=imp; saveData(); render(); showToast("Imported "+imp.length+" rows!"); return; }
+          }
+        }
+        showToast("Invalid file format");
+      } catch(err){ showToast("Error reading file"); }
+    };
+    reader.readAsText(file);
+  }
+
+  function loadSampleData(){
+    items=[
+      { id:"r_1", name:"🔥 M4 MacBook Pro Real World Review", date:todayISO(), edit:false, sent:true, yt:true, ig:true, createdAt:new Date().toISOString() },
+      { id:"r_2", name:"📱 iPhone 16 Pro Cinematic 4K Reel", date:todayISO(), edit:false, sent:true, yt:true, ig:false, createdAt:new Date().toISOString() },
+      { id:"r_3", name:"⚡ 10 AI Tools Every Creator Needs in 2026", date:todayISO(), edit:false, sent:true, yt:false, ig:false, createdAt:new Date().toISOString() },
+      { id:"r_4", name:"🎬 Behind the Scenes - Studio Lighting Setup", date:todayISO(), edit:true, sent:false, yt:false, ig:false, createdAt:new Date().toISOString() },
+      { id:"r_5", name:"🎙️ Best Microphone Comparison Under $100", date:todayISO(), edit:true, sent:false, yt:false, ig:false, createdAt:new Date().toISOString() }
+    ];
+    saveData(); render(); showToast("Loaded 5 sample rows!");
+  }
+
+  function showToast(msg, hasUndo){
+    var c=$("toastContainer"); if(!c) return;
+    var t=document.createElement("div"); t.className="toast";
+    t.innerHTML='<span>'+esc(msg)+'</span>'+(hasUndo?'<button type="button" class="toast-undo" id="btnToastUndo">Undo</button>':'');
+    c.appendChild(t);
+    if(hasUndo){ t.querySelector("#btnToastUndo").addEventListener("click",function(){ undoDelete(); t.remove(); }); }
+    setTimeout(function(){ t.style.opacity="0"; setTimeout(function(){ t.remove(); },250); }, 4500);
+  }
+
+  function init(){
+    var saved=localStorage.getItem(THEME_KEY)||"dark";
+    document.documentElement.setAttribute("data-theme", saved);
+    $("themeLabel").textContent=saved==="dark"?"☀️ Light":"🌙 Dark";
+    $("themeToggle").addEventListener("click",function(){
+      var cur=document.documentElement.getAttribute("data-theme")||"dark";
+      var nxt=cur==="dark"?"light":"dark";
+      document.documentElement.setAttribute("data-theme", nxt);
+      localStorage.setItem(THEME_KEY, nxt);
+      $("themeLabel").textContent=nxt==="dark"?"☀️ Light":"🌙 Dark";
+    });
+
+    loadData();
+    if(items.length===0) loadSampleData();
+
+    $("btnInsertRow").addEventListener("click",function(){ insertRow(); });
+    $("bottomAddRow").addEventListener("click",function(){ insertRow(); });
+    $("mobileAddFab").addEventListener("click",function(){ insertRow(); });
+
+    $("btnDeleteSelected").addEventListener("click",function(){
+      if(!selectedRowIds.size) return;
+      var c=selectedRowIds.size; items=items.filter(function(x){return !selectedRowIds.has(x.id)});
+      selectedRowIds.clear(); saveData(); render(); showToast("Deleted "+c+" rows!");
+    });
+
+    $("btnExportExcel").addEventListener("click",exportExcelCSV);
+    $("modalExportCsv").addEventListener("click",function(){ exportExcelCSV(); $("toolsModal").classList.remove("open"); });
+    $("modalExportJson").addEventListener("click",function(){ exportJSON(); $("toolsModal").classList.remove("open"); });
+    $("btnImportTrigger").addEventListener("click",function(){ $("fileImportInput").click(); });
+    $("fileImportInput").addEventListener("change",function(e){ if(e.target.files&&e.target.files[0]) handleImport(e.target.files[0]); });
+    $("btnSampleVideos").addEventListener("click",loadSampleData);
+    $("modalLoadSample").addEventListener("click",function(){ loadSampleData(); $("toolsModal").classList.remove("open"); });
+    $("modalClearAll").addEventListener("click",function(){ if(confirm("Clear sheet?")){ items=[]; selectedRowIds.clear(); saveData(); render(); $("toolsModal").classList.remove("open"); showToast("Cleared"); } });
+
+    $("sheetSearch").addEventListener("input",function(e){ searchQuery=(e.target.value||"").trim().toLowerCase(); render(); });
+    $("formulaInput").addEventListener("input",function(e){
+      if(activeFocusedCell){
+        activeFocusedCell.value=e.target.value;
+        var it=items.find(function(x){return x.id===activeFocusedCell.dataset.id});
+        if(it){ it.name=e.target.value; saveData(); }
+      }
+    });
+
+    $("excelGrid").addEventListener("click",function(e){
+      var t=e.target, sel=t.closest(".row-select"), toggle=t.closest('[data-action="toggle"]'), del=t.closest('[data-action="delete"]');
+      if(sel){
+        var id=sel.dataset.id; if(selectedRowIds.has(id)) selectedRowIds.delete(id); else selectedRowIds.add(id);
+        render(); return;
+      }
+      if(toggle){
+        var id=toggle.dataset.id, f=toggle.dataset.f, it=items.find(function(x){return x.id===id});
+        if(it) toggleStatus(id, f, !it[f]); return;
+      }
+      if(del){ deleteRow(del.dataset.id); return; }
+    });
+
+    $("excelGrid").addEventListener("input",function(e){
+      var t=e.target, id=t.dataset.id, col=t.dataset.col, it=items.find(function(x){return x.id===id});
+      if(!it) return;
+      if(col==="name"){ it.name=t.value; if($("formulaInput")) $("formulaInput").value=t.value; saveData(); }
+      else if(col==="date"){ it.date=t.value; saveData(); }
+    });
+
+    $("excelGrid").addEventListener("focusin",function(e){
+      var t=e.target;
+      if(t.tagName==="INPUT"){
+        activeFocusedCell=t;
+        var col=t.dataset.col==="date"?"A":"B", r=t.dataset.row||"1";
+        $("nameBox").textContent=col+r; $("formulaInput").value=t.value;
+      }
+    });
+
+    $("excelGrid").addEventListener("keydown",function(e){
+      var t=e.target; if(t.tagName!=="INPUT") return;
+      var r=parseInt(t.dataset.row||"1", 10), col=t.dataset.col;
+      if(e.key==="Enter"){
+        e.preventDefault();
+        var next=document.querySelector('input[data-row="'+(r+1)+'"][data-col="'+col+'"]');
+        if(next){ next.focus(); next.select(); } else { insertRow(); }
+      }
+    });
+
+    $$(".sheet-tab").forEach(function(tab){
+      tab.addEventListener("click",function(){
+        $$(".sheet-tab").forEach(function(x){x.classList.remove("active")});
+        tab.classList.add("active"); activeSheetTab=tab.dataset.tab; render();
+      });
+    });
+
+    $("btnOpenTools").addEventListener("click",function(){ $("toolsModal").classList.add("open"); });
+    $("btnCloseTools").addEventListener("click",function(){ $("toolsModal").classList.remove("open"); });
+    $("toolsModal").addEventListener("click",function(e){ if(e.target===$("toolsModal")) $("toolsModal").classList.remove("open"); });
+
+    render();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+  </script>
+</body>
+</html>

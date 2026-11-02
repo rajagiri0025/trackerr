@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <title>Daily Video Tracker.xlsx — Content Production Spreadsheet</title>
+  <meta name="description" content="Excel spreadsheet-style daily video production & publishing tracker. Optimized for mobile touchscreens and laptop displays.">
+  <meta name="theme-color" content="#107c41">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="./public/favicon.svg">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+  <!-- Top Excel Title Bar -->
+  <header class="excel-title-bar">
+    <div class="file-info">
+      <div class="excel-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="8" y1="13" x2="16" y2="13"></line>
+          <line x1="8" y1="17" x2="16" y2="17"></line>
+        </svg>
+        XLSX
+      </div>
+      <div class="file-name-group">
+        <span class="file-title">Daily Video Tracker.xlsx</span>
+        <span class="save-indicator" id="saveIndicator">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+          Saved
+        </span>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <!-- Theme Switcher -->
+      <button type="button" class="btn-excel" id="themeToggle" title="Toggle Excel Theme (Dark/Light)">
+        <span id="themeLabel">🌓 Theme</span>
+      </button>
+      <!-- Tools / Data Modal -->
+      <button type="button" class="btn-excel" id="btnOpenTools" title="File Tools & Backup">
+        ⚙️ Settings
+      </button>
+    </div>
+  </header>
+
+  <!-- Excel Ribbon Toolbar -->
+  <nav class="excel-ribbon">
+    <div class="ribbon-group">
+      <!-- Insert Row Button -->
+      <button type="button" class="btn-excel btn-primary" id="btnInsertRow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        + Insert Row
+      </button>
+
+      <!-- Delete Selected Rows -->
+      <button type="button" class="btn-excel btn-danger" id="btnDeleteSelected" style="display:none;">
+        🗑️ Delete Row(s) (<span id="selectedCountText">0</span>)
+      </button>
+
+      <div class="ribbon-divider"></div>
+
+      <!-- Export to Excel/CSV -->
+      <button type="button" class="btn-excel" id="btnExportExcel" title="Download Excel CSV">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export Excel (.csv)
+      </button>
+
+      <!-- Import Excel/JSON -->
+      <button type="button" class="btn-excel" id="btnImportTrigger" title="Import from backup file">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Import
+      </button>
+      <input type="file" id="fileImportInput" accept=".csv,.json" style="display:none;">
+
+      <div class="ribbon-divider"></div>
+
+      <!-- Load Sample Videos Button -->
+      <button type="button" class="btn-excel" id="btnSampleVideos" title="Load sample projects">
+        Load Sample
+      </button>
+    </div>
+
+    <!-- Search / Find Bar -->
+    <div class="ribbon-search">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="sheetSearch" placeholder="Find in sheet... ( / )" aria-label="Search sheet">
+    </div>
+  </nav>
+
+  <!-- Excel Formula & Name Box Bar (fx) -->
+  <div class="formula-bar">
+    <div class="name-box" id="nameBox">B2</div>
+    <div class="fx-label">fx</div>
+    <input type="text" class="formula-input" id="formulaInput" placeholder="=COUNTA(B2:B20)" aria-label="Formula or cell value">
+
+    <!-- KPI Quick Stats Badges inside Formula Bar -->
+    <div class="kpi-quick-badges" id="kpiBadges">
+      <span class="kpi-badge">Total: <b id="statTotal">0</b></span>
+      <span class="kpi-badge">To Edit: <b id="statEdit" style="color:var(--stage-edit)">0</b></span>
+      <span class="kpi-badge">Sent: <b id="statSent" style="color:var(--stage-sent)">0</b></span>
+      <span class="kpi-badge">YouTube: <b id="statYt" style="color:var(--stage-yt)">0</b></span>
+      <span class="kpi-badge">Instagram: <b id="statIg" style="color:var(--stage-ig)">0</b></span>
+      <span class="kpi-badge">Progress: <b id="statRate">0%</b></span>
+    </div>
+  </div>
+
+  <!-- The Spreadsheet Grid Container (with Freeze Panes) -->
+  <main class="sheet-container" id="sheetScrollArea">
+    <table class="excel-grid" id="excelGrid">
+      <thead>
+        <tr>
+          <!-- Column # (Row index, Frozen on left) -->
+          <th class="col-index">#</th>
+          <!-- Column A: Date -->
+          <th class="col-date" style="width: 130px;">A: Date</th>
+          <!-- Column B: Project Name (Frozen on left!) -->
+          <th class="col-name" style="width: 280px;">B: Project Name</th>
+          <!-- Column C: To Edit -->
+          <th class="col-edit" style="width: 110px;">C: To Edit</th>
+          <!-- Column D: Sent Review -->
+          <th class="col-sent" style="width: 110px;">D: Sent</th>
+          <!-- Column E: YouTube -->
+          <th class="col-yt" style="width: 110px;">E: YouTube</th>
+          <!-- Column F: Instagram -->
+          <th class="col-ig" style="width: 110px;">F: Instagram</th>
+          <!-- Column G: Progress -->
+          <th class="col-progress" style="width: 120px;">G: Status</th>
+          <!-- Column H: Action -->
+          <th class="col-actions" style="width: 70px;"></th>
+        </tr>
+      </thead>
+
+      <!-- Spreadsheet Body Rows -->
+      <tbody id="sheetBody"></tbody>
+
+      <!-- Excel Formula Summary Row at Bottom -->
+      <tfoot>
+        <tr>
+          <th class="col-index">∑</th>
+          <th>=COUNTA</th>
+          <th class="col-name"><span id="summaryTotal">0 Projects</span></th>
+          <th style="text-align:center;"><span id="summaryEdit" style="color:var(--stage-edit)">0 To Edit</span></th>
+          <th style="text-align:center;"><span id="summarySent" style="color:var(--stage-sent)">0 Sent</span></th>
+          <th style="text-align:center;"><span id="summaryYt" style="color:var(--stage-yt)">0 on YT</span></th>
+          <th style="text-align:center;"><span id="summaryIg" style="color:var(--stage-ig)">0 on IG</span></th>
+          <th style="text-align:center;"><span id="summaryRate">0% Avg</span></th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Clickable "+ Add new row" bar at the end of grid -->
+    <div class="add-row-placeholder" id="bottomAddRow">
+      + Click here to append a new video row...
+    </div>
+  </main>
+
+  <!-- Excel Bottom Sheet Tabs Bar (like Excel/Google Sheets tabs) -->
+  <footer class="sheet-tabs-bar">
+    <div class="sheet-tabs" id="sheetTabs" role="tablist">
+      <button type="button" class="sheet-tab active" data-tab="all" role="tab" aria-selected="true">
+        <span>🟢 Sheet 1: All Videos</span>
+      </button>
+      <button type="button" class="sheet-tab" data-tab="edit" role="tab" aria-selected="false">
+        <span>🟡 Sheet 2: To Edit</span>
+      </button>
+      <button type="button" class="sheet-tab" data-tab="sent" role="tab" aria-selected="false">
+        <span>📤 Sheet 3: Sent Review</span>
+      </button>
+      <button type="button" class="sheet-tab" data-tab="yt" role="tab" aria-selected="false">
+        <span>🔴 Sheet 4: YouTube</span>
+      </button>
+      <button type="button" class="sheet-tab" data-tab="ig" role="tab" aria-selected="false">
+        <span>📸 Sheet 5: Instagram</span>
+      </button>
+      <button type="button" class="sheet-tab" data-tab="done" role="tab" aria-selected="false">
+        <span>✨ Sheet 6: Completed</span>
+      </button>
+    </div>
+
+    <div class="sheet-status-info">
+      <span id="sheetCountInfo">Showing 0 rows</span>
+      <span>•</span>
+      <span>UTF-8</span>
+      <span>•</span>
+      <span>100%</span>
+    </div>
+  </footer>
+
+  <!-- Mobile Floating Action Button (FAB) for fast thumb addition -->
+  <button type="button" class="fab-excel" id="mobileAddFab" title="Add Row" aria-label="Add row">
+    +
+  </button>
+
+  <!-- Toast Notification Container with 5-Second Undo -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Settings & Backup Modal -->
+  <div class="modal-overlay" id="toolsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Spreadsheet Tools & Data</h3>
+        <button type="button" class="btn-excel" id="btnCloseTools">✕</button>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.4;">
+        All spreadsheet rows are saved in real-time to your browser's LocalStorage. You can export clean Excel CSV backups anytime.
+      </p>
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn-excel btn-primary" id="modalExportCsv" style="flex:1;">
+          ⬇️ Export to Excel (.csv)
+        </button>
+        <button type="button" class="btn-excel" id="modalExportJson" style="flex:1;">
+          💾 Export JSON
+        </button>
+      </div>
+      <hr style="border:none; border-top:1px solid var(--border-sheet); margin:6px 0;">
+      <div style="display:flex; justify-content:space-between; gap:10px;">
+        <button type="button" class="btn-excel" id="modalLoadSample">Load Sample Data</button>
+        <button type="button" class="btn-excel btn-danger" id="modalClearAll">Clear Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

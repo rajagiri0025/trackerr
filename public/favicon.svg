@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="4" y="6" width="40" height="36" rx="8" fill="url(#grad)" filter="url(#shadow)"/>
+  <rect x="7" y="9" width="34" height="9" rx="3" fill="#1e1b4b"/>
+  <!-- Clapper stripes -->
+  <polygon points="12,9 16,9 12,18 8,18" fill="#ffffff" opacity="0.9"/>
+  <polygon points="20,9 24,9 20,18 16,18" fill="#ffffff" opacity="0.9"/>
+  <polygon points="28,9 32,9 28,18 24,18" fill="#ffffff" opacity="0.9"/>
+  <polygon points="36,9 40,9 36,18 32,18" fill="#ffffff" opacity="0.9"/>
+  <!-- Play triangle -->
+  <polygon points="20,24 32,31 20,38" fill="#ffffff"/>
+</svg>
