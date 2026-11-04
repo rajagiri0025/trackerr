@@ -41,6 +41,11 @@ function escapeHtml(str) {
 const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
 const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : '/' + path}`;
 
+// MongoDB-first: warn in console if no backend URL is configured
+if (!API_BASE) {
+  console.warn("⚠️ VITE_API_URL is not set. Data will only be saved to localStorage. Set it to your Render backend URL.");
+}
+
 async function checkCloudStatus() {
   try {
     const res = await fetch(apiUrl("/api/status"));
@@ -69,6 +74,15 @@ function updateStorageBadge() {
       MongoDB Atlas Live
     `;
     indicator.style.color = "#10b981";
+  } else if (!API_BASE) {
+    indicator.innerHTML = `
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="#ef4444">
+        <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+      ⚠️ No Backend URL Set
+    `;
+    indicator.style.color = "#ef4444";
+    indicator.title = "Set VITE_API_URL to your Render backend URL in Netlify env vars";
   } else if (cloudNeedsUsername) {
     indicator.innerHTML = `
       <svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b">
@@ -79,17 +93,17 @@ function updateStorageBadge() {
     indicator.style.color = "#f59e0b";
   } else {
     indicator.innerHTML = `
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b">
         <circle cx="12" cy="12" r="10"></circle>
       </svg>
-      LocalStorage
+      LocalStorage Only
     `;
-    indicator.style.color = "var(--excel-green)";
+    indicator.style.color = "#f59e0b";
   }
 }
 
 async function loadData() {
-  // Always load from localStorage first for instant initial render
+  // Load from localStorage instantly for immediate render
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     items = raw ? JSON.parse(raw) : [];
@@ -97,20 +111,25 @@ async function loadData() {
   } catch (e) {
     items = [];
   }
+  render(); // show cached data immediately
 
-  // Then check MongoDB Atlas
+  // Now try MongoDB as the source of truth
   const status = await checkCloudStatus();
   if (status.connected) {
     try {
       const res = await fetch(apiUrl("/api/videos"));
       if (res.ok) {
         const cloudVideos = await res.json();
-        if (Array.isArray(cloudVideos) && cloudVideos.length > 0) {
-          items = cloudVideos;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-        } else if (items.length > 0) {
-          // If Atlas is empty but user has local items, offer sync
-          syncToCloud();
+        if (Array.isArray(cloudVideos)) {
+          if (cloudVideos.length > 0) {
+            // MongoDB has data — use it as the truth
+            items = cloudVideos;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+          } else if (items.length > 0) {
+            // MongoDB is empty but we have local data — migrate it up
+            showToast("Migrating local data to MongoDB...");
+            await syncToCloud();
+          }
         }
       }
     } catch (err) {
@@ -170,10 +189,7 @@ async function insertRow(name = "", date = todayISO()) {
     createdAt: new Date().toISOString()
   };
 
-  items.unshift(newRow);
-  saveDataLocal();
-  render();
-
+  // Save to MongoDB first (primary storage)
   if (isCloudConnected) {
     try {
       await fetch(apiUrl("/api/videos"), {
@@ -183,8 +199,14 @@ async function insertRow(name = "", date = todayISO()) {
       });
     } catch (e) {
       console.error("Failed to post to MongoDB Atlas", e);
+      showToast("⚠️ Could not save to MongoDB. Saved locally only.");
     }
   }
+
+  // Update local state & localStorage as cache
+  items.unshift(newRow);
+  saveDataLocal();
+  render();
 
   setTimeout(() => {
     const input = document.querySelector(`input[data-id="${newRow.id}"][data-col="name"]`);

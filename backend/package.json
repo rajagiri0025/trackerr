@@ -1,0 +1,17 @@
+{
+  "name": "daily-video-tracker-backend",
+  "version": "1.0.0",
+  "description": "Express + MongoDB Atlas API backend for Daily Video Tracker",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^4.21.0",
+    "mongoose": "^9.11.4"
+  }
+}
+

@@ -1,0 +1,16 @@
+{
+  "name": "Daily Video Tracker",
+  "short_name": "VideoTracker",
+  "description": "Track video content workflow from editing, client review, to YouTube & Instagram publishing.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

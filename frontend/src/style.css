@@ -1,0 +1,837 @@
+/* ==========================================================================
+   DAILY VIDEO TRACKER - EXCEL SPREADSHEET EDITION
+   Modern, responsive Excel / Sheets design system for Mobile & Laptop screens
+   ========================================================================== */
+
+:root {
+  /* Color Palette - Light Excel Theme */
+  --excel-green: #107c41;
+  --excel-green-hover: #0b5a2f;
+  --excel-green-light: #e6f4ea;
+  --excel-selection: #107c41;
+  --excel-selection-bg: rgba(16, 124, 65, 0.08);
+
+  --bg-app: #f3f4f6;
+  --bg-ribbon: #ffffff;
+  --bg-sheet: #ffffff;
+  --bg-header: #f8fafc;
+  --bg-row-even: #ffffff;
+  --bg-row-odd: #fcfcfd;
+  --bg-row-hover: #f1f5f9;
+  --bg-selected: #e8f0fe;
+  
+  --border-sheet: #d1d5db;
+  --border-cell: #e5e7eb;
+  --border-cell-dark: #cbd5e1;
+
+  --text-main: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+
+  /* Pipeline Stage Accents */
+  --stage-edit: #d97706;
+  --stage-edit-bg: #fef3c7;
+  --stage-sent: #059669;
+  --stage-sent-bg: #d1fae5;
+  --stage-yt: #dc2626;
+  --stage-yt-bg: #fee2e2;
+  --stage-ig: #c026d3;
+  --stage-ig-bg: #fae8ff;
+
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  color-scheme: light;
+}
+
+/* Dark Excel Theme */
+[data-theme="dark"] {
+  --excel-green: #22c55e;
+  --excel-green-hover: #16a34a;
+  --excel-green-light: rgba(34, 197, 94, 0.15);
+  --excel-selection: #4ade80;
+  --excel-selection-bg: rgba(74, 222, 128, 0.12);
+
+  --bg-app: #0b0f19;
+  --bg-ribbon: #111827;
+  --bg-sheet: #131b2e;
+  --bg-header: #1e293b;
+  --bg-row-even: #131b2e;
+  --bg-row-odd: #101726;
+  --bg-row-hover: #1e293b;
+  --bg-selected: rgba(99, 102, 241, 0.15);
+
+  --border-sheet: #1f293d;
+  --border-cell: #1f293d;
+  --border-cell-dark: #334155;
+
+  --text-main: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #64748b;
+
+  --stage-edit-bg: rgba(217, 119, 6, 0.2);
+  --stage-sent-bg: rgba(5, 150, 105, 0.2);
+  --stage-yt-bg: rgba(220, 38, 38, 0.2);
+  --stage-ig-bg: rgba(192, 38, 211, 0.2);
+
+  color-scheme: dark;
+}
+
+/* Reset & Core Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* App takes full screen with internal spreadsheet scrolling */
+}
+
+/* ==========================================================================
+   TOP EXCEL HEADER & RIBBON TOOLBAR
+   ========================================================================== */
+.excel-title-bar {
+  background: var(--bg-ribbon);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  height: 48px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.excel-badge {
+  background: var(--excel-green);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.02em;
+}
+
+.file-name-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.save-indicator {
+  font-size: 0.72rem;
+  color: var(--excel-green);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Excel Ribbon Actions Bar */
+.excel-ribbon {
+  background: var(--bg-ribbon);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ribbon-group::-webkit-scrollbar { display: none; }
+
+.btn-excel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-cell-dark);
+  background: var(--bg-sheet);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-excel:hover {
+  background: var(--bg-header);
+  border-color: var(--excel-green);
+}
+
+.btn-excel.btn-primary {
+  background: var(--excel-green);
+  color: #ffffff;
+  border-color: var(--excel-green);
+}
+.btn-excel.btn-primary:hover {
+  background: var(--excel-green-hover);
+}
+
+.btn-excel.btn-danger {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.btn-excel.btn-danger:hover {
+  background: #fee2e2;
+}
+
+.ribbon-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-sheet);
+  margin: 0 4px;
+}
+
+/* Search Box in Ribbon */
+.ribbon-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ribbon-search input {
+  padding: 6px 10px 6px 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-cell-dark);
+  background: var(--bg-header);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  width: 180px;
+  transition: width 0.2s ease, border-color 0.15s ease;
+}
+
+.ribbon-search input:focus {
+  outline: none;
+  border-color: var(--excel-green);
+  width: 230px;
+  background: var(--bg-sheet);
+}
+
+.search-ico {
+  position: absolute;
+  left: 8px;
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   EXCEL FORMULA & NAME BOX BAR (fx)
+   ========================================================================== */
+.formula-bar {
+  background: var(--bg-sheet);
+  border-bottom: 1px solid var(--border-sheet);
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.name-box {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-cell);
+  border-radius: var(--radius-sm);
+  background: var(--bg-header);
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-align: center;
+  user-select: none;
+}
+
+.fx-label {
+  font-style: italic;
+  font-weight: 800;
+  color: var(--excel-green);
+  user-select: none;
+  padding: 0 4px;
+}
+
+.formula-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--border-cell);
+  border-radius: var(--radius-sm);
+  background: var(--bg-header);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+.formula-input:focus {
+  outline: none;
+  border-color: var(--excel-green);
+  background: var(--bg-sheet);
+}
+
+/* Quick KPI Pills in Formula Bar */
+.kpi-quick-badges {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media (min-width: 900px) {
+  .kpi-quick-badges {
+    display: flex;
+  }
+}
+
+.kpi-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-header);
+  border: 1px solid var(--border-cell);
+  color: var(--text-secondary);
+}
+.kpi-badge b { color: var(--text-main); }
+
+/* ==========================================================================
+   THE SPREADSHEET GRID & FREEZE PANES
+   ========================================================================== */
+.sheet-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: var(--bg-app);
+  -webkit-overflow-scrolling: touch;
+}
+
+.excel-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: var(--bg-sheet);
+  font-size: 0.88rem;
+}
+
+/* Top Column Headers (A, B, C...) */
+.excel-grid thead th {
+  background: var(--bg-header);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 10px;
+  border-right: 1px solid var(--border-cell);
+  border-bottom: 2px solid var(--border-sheet);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.excel-grid thead th:hover {
+  background: var(--bg-row-hover);
+}
+
+/* Freeze Panes for Mobile & Desktop */
+/* Corner & Row Number Header */
+.excel-grid th.col-index,
+.excel-grid td.cell-index {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  background: var(--bg-header);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  border-right: 2px solid var(--border-sheet);
+  user-select: none;
+}
+.excel-grid thead th.col-index {
+  z-index: 30; /* Corner cell is always on top */
+}
+
+/* Freeze Column B: Project Name (Frozen on Mobile and Desktop!) */
+.excel-grid th.col-name,
+.excel-grid td.cell-name {
+  position: sticky;
+  left: 50px;
+  z-index: 9;
+  border-right: 2px solid var(--border-sheet);
+  background: var(--bg-sheet);
+}
+.excel-grid thead th.col-name {
+  z-index: 29;
+  background: var(--bg-header);
+}
+
+/* Cell Rows */
+.excel-grid tbody tr {
+  height: 42px;
+  transition: background 0.1s ease;
+}
+
+.excel-grid tbody tr:nth-child(even) td {
+  background-color: var(--bg-row-even);
+}
+.excel-grid tbody tr:nth-child(odd) td {
+  background-color: var(--bg-row-odd);
+}
+
+/* Hover & Selected Row States */
+.excel-grid tbody tr:hover td {
+  background-color: var(--bg-row-hover) !important;
+}
+
+.excel-grid tbody tr.selected td {
+  background-color: var(--bg-selected) !important;
+}
+
+/* Cell Borders & Typography */
+.excel-grid td {
+  padding: 6px 10px;
+  border-right: 1px solid var(--border-cell);
+  border-bottom: 1px solid var(--border-cell);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Editable Cell Inputs inside Grid */
+.cell-input {
+  width: 100%;
+  height: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  padding: 4px 6px;
+  border-radius: 2px;
+}
+
+.cell-input:hover {
+  border-color: var(--border-cell-dark);
+}
+
+.cell-input:focus {
+  outline: none;
+  background: var(--bg-sheet);
+  border: 2px solid var(--excel-selection);
+  box-shadow: 0 0 0 1px var(--excel-selection);
+}
+
+/* Date Cell */
+.cell-date {
+  width: 130px;
+  min-width: 120px;
+}
+.cell-date input[type="date"] {
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  padding: 4px;
+  border-radius: 2px;
+  width: 100%;
+  cursor: pointer;
+}
+.cell-date input[type="date"]:hover {
+  border-color: var(--border-cell-dark);
+}
+.cell-date input[type="date"]:focus {
+  border-color: var(--excel-selection);
+  background: var(--bg-sheet);
+}
+
+/* Checkbox Cells (To Edit, Sent, YouTube, Instagram) */
+.cell-checkbox {
+  width: 105px;
+  min-width: 95px;
+  text-align: center;
+}
+
+.excel-check-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 90%;
+  min-height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-cell);
+  background: var(--bg-header);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.excel-check-btn:active {
+  transform: scale(0.96);
+}
+
+.excel-check-btn.checked.c-edit {
+  background: var(--stage-edit-bg);
+  border-color: var(--stage-edit);
+  color: var(--stage-edit);
+}
+
+.excel-check-btn.checked.c-sent {
+  background: var(--stage-sent-bg);
+  border-color: var(--stage-sent);
+  color: var(--stage-sent);
+}
+
+.excel-check-btn.checked.c-yt {
+  background: var(--stage-yt-bg);
+  border-color: var(--stage-yt);
+  color: var(--stage-yt);
+}
+
+.excel-check-btn.checked.c-ig {
+  background: var(--stage-ig-bg);
+  border-color: var(--stage-ig);
+  color: var(--stage-ig);
+}
+
+/* Progress Column Cell */
+.cell-progress {
+  width: 120px;
+  min-width: 110px;
+  text-align: center;
+}
+
+.progress-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+
+.progress-bar-bg {
+  width: 80px;
+  height: 5px;
+  background: var(--border-cell);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Actions Column Cell */
+.cell-actions {
+  width: 70px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.btn-row-del {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn-row-del:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* Excel Summary Formula Row at Bottom of Table */
+.excel-grid tfoot th {
+  background: var(--bg-header);
+  border-top: 2px solid var(--border-sheet);
+  border-right: 1px solid var(--border-cell);
+  border-bottom: 2px solid var(--border-sheet);
+  padding: 8px 10px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--text-main);
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
+  white-space: nowrap;
+}
+
+.excel-grid tfoot th.col-index,
+.excel-grid tfoot th.col-name {
+  position: sticky;
+  bottom: 0;
+  z-index: 28;
+}
+
+/* Quick Add Row at the end of grid */
+.add-row-placeholder {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: var(--excel-green);
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: var(--bg-sheet);
+  border-bottom: 1px solid var(--border-cell);
+  user-select: none;
+}
+.add-row-placeholder:hover {
+  background: var(--excel-green-light);
+}
+
+/* ==========================================================================
+   EXCEL BOTTOM SHEET TABS BAR
+   ========================================================================== */
+.sheet-tabs-bar {
+  background: var(--bg-ribbon);
+  border-top: 1px solid var(--border-sheet);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 38px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.sheet-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sheet-tabs::-webkit-scrollbar { display: none; }
+
+.sheet-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-top-left-radius: var(--radius-sm);
+  border-top-right-radius: var(--radius-sm);
+  border: 1px solid var(--border-sheet);
+  border-bottom: none;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  height: 32px;
+}
+
+.sheet-tab:hover {
+  background: var(--bg-sheet);
+  color: var(--text-main);
+}
+
+.sheet-tab.active {
+  background: var(--bg-sheet);
+  color: var(--excel-green);
+  font-weight: 800;
+  border-top: 3px solid var(--excel-green);
+  padding-top: 4px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.sheet-status-info {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .sheet-status-info { display: flex; align-items: center; gap: 8px; }
+}
+
+/* ==========================================================================
+   MOBILE FLOATING ACTION BUTTON & TOUCH OPTIMIZATIONS
+   ========================================================================== */
+.fab-excel {
+  position: fixed;
+  bottom: 50px;
+  right: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--excel-green);
+  color: #ffffff;
+  border: none;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 99;
+  transition: transform 0.2s ease;
+}
+.fab-excel:active { transform: scale(0.92); }
+
+@media (min-width: 768px) {
+  .fab-excel { display: none; }
+}
+
+/* Toast Container with 5-Second Undo */
+.toast-container {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+  width: min(90%, 380px);
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--text-main);
+  color: var(--bg-app);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  pointer-events: auto;
+  animation: toastPop 0.2s ease-out;
+}
+
+@keyframes toastPop {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toast-undo {
+  background: var(--excel-green);
+  color: #ffffff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal Overlays */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-card {
+  background: var(--bg-sheet);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-sheet);
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 1.1rem; font-weight: 700; }
