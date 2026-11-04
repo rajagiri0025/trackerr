@@ -38,9 +38,12 @@ function escapeHtml(str) {
 // API & STORAGE LAYER
 // --------------------------------------------------------------------------
 
+const API_BASE = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : '/' + path}`;
+
 async function checkCloudStatus() {
   try {
-    const res = await fetch("/api/status");
+    const res = await fetch(apiUrl("/api/status"));
     if (!res.ok) throw new Error("Status check failed");
     const data = await res.json();
     isCloudConnected = !!data.connected;
@@ -99,7 +102,7 @@ async function loadData() {
   const status = await checkCloudStatus();
   if (status.connected) {
     try {
-      const res = await fetch("/api/videos");
+      const res = await fetch(apiUrl("/api/videos"));
       if (res.ok) {
         const cloudVideos = await res.json();
         if (Array.isArray(cloudVideos) && cloudVideos.length > 0) {
@@ -127,7 +130,7 @@ function saveDataLocal() {
 async function syncToCloud() {
   if (!isCloudConnected || !items.length) return;
   try {
-    const res = await fetch("/api/videos/sync", {
+    const res = await fetch(apiUrl("/api/videos/sync"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items })
@@ -173,7 +176,7 @@ async function insertRow(name = "", date = todayISO()) {
 
   if (isCloudConnected) {
     try {
-      await fetch("/api/videos", {
+      await fetch(apiUrl("/api/videos"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRow)
@@ -215,7 +218,7 @@ async function toggleStatus(id, field, value) {
 
   if (isCloudConnected) {
     try {
-      await fetch(`/api/videos/${id}`, {
+      await fetch(apiUrl(`/api/videos/${id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [field]: item[field], edit: item.edit, sent: item.sent })
@@ -238,7 +241,7 @@ function handleRename(id, newName) {
     clearTimeout(renameDebounceTimeout);
     renameDebounceTimeout = setTimeout(async () => {
       try {
-        await fetch(`/api/videos/${id}`, {
+        await fetch(apiUrl(`/api/videos/${id}`), {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: newName })
@@ -257,7 +260,7 @@ async function handleDateChange(id, newDate) {
 
   if (isCloudConnected) {
     try {
-      await fetch(`/api/videos/${id}`, {
+      await fetch(apiUrl(`/api/videos/${id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: newDate })
@@ -284,7 +287,7 @@ async function deleteRow(id) {
   const timeoutId = setTimeout(async () => {
     if (isCloudConnected) {
       try {
-        await fetch(`/api/videos/${id}`, { method: "DELETE" });
+        await fetch(apiUrl(`/api/videos/${id}`), { method: "DELETE" });
       } catch (e) {}
     }
     recentlyDeleted = null;
@@ -305,7 +308,7 @@ function undoDelete() {
   recentlyDeleted.items.forEach(({ item, index }) => {
     items.splice(Math.min(index, items.length), 0, item);
     if (isCloudConnected) {
-      fetch("/api/videos", {
+      fetch(apiUrl("/api/videos"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item)
@@ -627,7 +630,7 @@ function initEvents() {
 
     if (isCloudConnected) {
       try {
-        await fetch("/api/videos/bulk-delete", {
+        await fetch(apiUrl("/api/videos/bulk-delete"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids })
@@ -663,7 +666,7 @@ function initEvents() {
 
       if (isCloudConnected && allIds.length) {
         try {
-          await fetch("/api/videos/bulk-delete", {
+          await fetch(apiUrl("/api/videos/bulk-delete"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ids: allIds })
